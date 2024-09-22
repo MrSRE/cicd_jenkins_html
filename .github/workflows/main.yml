@@ -23,3 +23,15 @@ jobs:
           port: 22
           source: ./
           target: /home/ubuntu
+
+       - name: Move code to /var/www/html with sudo 
+         uses: appleboy/ssh-action@v0.1.7
+         with:
+          host: ${{ secrets.EC2_HOST_NAME }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSHKEY }}
+          port: 22
+          script: |
+            sudo mv /home/ubuntu/deployment-temp/* /var/www/html/
+            sudo chown -R www-data:www-data /var/www/html/
+            sudo systemctl restart nginx
