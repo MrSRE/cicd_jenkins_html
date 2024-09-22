@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - main
+      - dev
+      - prod
   pull_request:
     branches:
       - main
+      - dev
+      - prod
 
 jobs:
   build: # user-defined job name
@@ -26,7 +30,8 @@ jobs:
           source: ./ # Copy the code from the repository
           target: /home/ubuntu/ # Target directory on EC2 instance
 
-      - name: Move code to /var/www/html with sudo
+      - name: Move code for dev branch
+        if: github.ref == 'refs/heads/dev'
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST_NAME }}
@@ -34,5 +39,29 @@ jobs:
           key: ${{ secrets.EC2_SSHKEY }}
           port: 22
           script: |
-            sudo mv /home/ubuntu/index.html /var/www/html/
+            sudo mv /home/ubuntu/index.html /var/www/html/dev/
+            sudo systemctl restart nginx
+
+      - name: Move code for main branch
+        if: github.ref == 'refs/heads/main'
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST_NAME }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSHKEY }}
+          port: 22
+          script: |
+            sudo mv /home/ubuntu/index.html /var/www/html/main/
+            sudo systemctl restart nginx
+
+      - name: Move code for prod branch
+        if: github.ref == 'refs/heads/prod'
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST_NAME }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSHKEY }}
+          port: 22
+          script: |
+            sudo mv /home/ubuntu/index.html /var/www/html/prod/
             sudo systemctl restart nginx
