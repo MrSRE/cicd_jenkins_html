@@ -1,10 +1,11 @@
 name: main
-
 on:
     push:
         branches:
             - main
-
+    pull_requests:
+        branches:
+            - main
 jobs:
     build:
         runs-on: ubuntu-latest
