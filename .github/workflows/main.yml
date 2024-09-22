@@ -32,6 +32,5 @@ jobs:
           key: ${{ secrets.EC2_SSHKEY }}
           port: 22
           script: |
-            sudo mv /home/ubuntu/deployment-temp/* /var/www/html/
-            sudo chown -R www-data:www-data /var/www/html/
+            sudo mv /home/ubuntu/index.html /var/www/html/
             sudo systemctl restart nginx
